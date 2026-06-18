@@ -1,12 +1,45 @@
-
-# Playwright
+# ==========================================
+# Dependencies
+# ==========================================
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/
-# Environment variables
+
+# ==========================================
+# Playwright Reports & Results
+# ==========================================
+test-results/
+playwright-report/
+blob-report/
+html-report/
+reports-archive/
+
+# ==========================================
+# Playwright Cache & Authentication
+# ==========================================
+playwright/.cache/
+playwright/.auth/
+
+# ==========================================
+# Environment Variables
+# ==========================================
 .env
 .env.local
 .env.*.local
+
+# ==========================================
+# Logs
+# ==========================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# VS Code
+# ==========================================
+.vscode/settings.json
