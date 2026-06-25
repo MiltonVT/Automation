@@ -71,8 +71,7 @@
     "test:login-simple": "node scripts/runTestWithReports.js studio 'Login to STUDIO ALFA - POM' --headed",
     "test:open-app": "node scripts/runTestWithReports.js studio 'open.*application' --headed",
     "reports:list": "node scripts/listReports.js",
-    "reports:clean": "node scripts/cleanOldReports.js"
-    ,
+    "reports:clean": "node scripts/cleanOldReports.js",
     "test:modules-screen-flow": "npx playwright test src/tests/modules-screen-flow.spec.ts",
     "test:modules-screen-flow:ui": "npx playwright test src/tests/modules-screen-flow.spec.ts --ui",
     "test:modules-screen-flow:headed": "npx playwright test src/tests/modules-screen-flow.spec.ts --headed",
@@ -89,7 +88,11 @@
     "test:local-variables": "npx playwright test src/tests/local-variables.spec.ts",
     "test:local-variables:headed": "npx playwright test src/tests/local-variables.spec.ts --headed",
     "test:local-variables:debug": "npx playwright test src/tests/local-variables.spec.ts --debug",
-    "test:local-variables:ui": "npx playwright test src/tests/local-variables.spec.ts --ui"
+    "test:local-variables:ui": "npx playwright test src/tests/local-variables.spec.ts --ui",
+    "test:process-lambda": "npx playwright test src/tests/process-lambda.spec.ts",
+    "test:process-lambda:headed": "npx playwright test src/tests/process-lambda.spec.ts --headed",
+    "test:process-lambda:debug": "npx playwright test src/tests/process-lambda.spec.ts --debug",
+    "test:process-lambda:ui": "npx playwright test src/tests/process-lambda.spec.ts --ui"
   },
   "keywords": [],
   "author": "",
@@ -99,5 +102,8 @@
     "@playwright/test": "^1.58.0",
     "@types/node": "^25.0.10",
     "dotenv": "^16.3.1"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1"
   }
 }

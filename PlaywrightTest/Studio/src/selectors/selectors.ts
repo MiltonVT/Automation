@@ -27,6 +27,9 @@ export const IFRAMES = {
   THEMES: 'iframe[title="Themes"]',
   CREATE_BRANCH: 'iframe[title="Create branch"]',
   LOCAL_VARIABLES: 'iframe[title="Local variables"]',
+  CREATE_LAMBDA: 'iframe[title="Create lambda"]',
+  COMMIT_MODAL: 'iframe[title="Commit modal"]',
+  LAMBDA_MAKECODE: 'iframe[title="lambda makecode"]',
 } as const;
 
 // ── Login Page ──────────────────────────────────────────────────────

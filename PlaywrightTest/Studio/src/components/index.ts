@@ -10,3 +10,6 @@ export { DependenciesComponent } from './DependenciesComponent';
 export { PublishComponent } from './PublishComponent';
 export { SettingsIframeComponent } from './SettingsIframeComponent';
 export { UnnamedComponent } from './UnnamedComponent';
+export { CreateLambdaComponent } from './CreateLambdaComponent';
+export { LambdaEditorComponent } from './LambdaEditorComponent';
+export { CommitModalComponent } from './CommitModalComponent';

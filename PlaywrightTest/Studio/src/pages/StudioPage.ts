@@ -9,6 +9,9 @@ import { DependenciesComponent } from '../components/DependenciesComponent';
 import { ProcessesComponent } from '../components/ProcessesComponent';
 import { CreateBranchComponent, BranchConfig } from '../components/CreateBranchComponent';
 import { LocalVariablesComponent, LocalVariableData } from '../components/LocalVariablesComponent';
+import { CreateLambdaComponent } from '../components/CreateLambdaComponent';
+import { LambdaEditorComponent, LambdaData } from '../components/LambdaEditorComponent';
+import { CommitModalComponent } from '../components/CommitModalComponent';
 import { IFRAMES } from '../selectors/selectors';
 import { STUDIO } from '../selectors/selectors';
 import { TIMEOUTS, APPLICATION } from '../utils/constants';
@@ -436,5 +439,175 @@ export class StudioPage extends BasePage {
     const text = settingsFrame.getByText('Settings');
     await text.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
     Logger.success('Verify', 'Settings', 'Settings panel visible');
+  }
+
+  // -- Process Lambda -------------------------------------------------
+
+  /** Open the Processes panel via Menu button */
+  async openProcessesPanel(): Promise<void> {
+    Logger.action('Click', 'Menu', 'Opening menu');
+    const menuBtn = this.container.frame.getByRole('button', { name: 'Menu' });
+    await menuBtn.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await menuBtn.click();
+
+    Logger.action('Click', 'Processes', 'Opening Processes panel');
+    const processesBtn = this.container.frame.getByRole('button', { name: 'Processes', exact: true });
+    await processesBtn.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await processesBtn.click();
+
+    const processesFrame = this.container.getFrame(IFRAMES.PROCESSES);
+    const processes = new ProcessesComponent(processesFrame);
+    await processes.searchBox.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    Logger.success('Click', 'Processes', 'Processes panel loaded');
+  }
+
+  /** Create a new lambda process: open modal, select type, fill details, add code, save, and commit */
+  async createLambdaProcess(data: LambdaData): Promise<void> {
+    const processesFrame = this.container.getFrame(IFRAMES.PROCESSES);
+    const processes = new ProcessesComponent(processesFrame);
+
+    Logger.action('Click', 'Processes', 'Opening Create lambda modal');
+    await processes.createButton.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await processes.createButton.click();
+
+    const createLambdaFrame = this.container.getFrame(IFRAMES.CREATE_LAMBDA);
+    const createLambda = new CreateLambdaComponent(createLambdaFrame);
+    await createLambda.selectProcessType();
+
+    const innerFrame = this.container.getFrame(IFRAMES.EDITOR).frameLocator('iframe');
+    const editor = new LambdaEditorComponent(innerFrame);
+
+    Logger.action('Wait', 'Lambda Editor', 'Waiting for editor to be ready');
+    await editor.makecodeReadySignal.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+
+    Logger.action('Fill', 'Lambda Editor', `Setting name: ${data.name}`);
+    await editor.nameInput.click();
+    await editor.nameInput.fill(data.name);
+    await editor.descriptionInput.click();
+    await editor.descriptionInput.fill(data.description);
+
+    // Switch to Code tab, enter code, then switch back to Block tab
+    await editor.codeButton.click();
+    await this.page.waitForTimeout(TIMEOUTS.MICRO_WAIT);
+    await editor.simulatorLabel.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await editor.simulatorLabel.click();
+    await editor.viewLineFirst.click();
+    await editor.codeEditor.fill(data.code);
+    await editor.getLineNumber(3).click();
+    await editor.blockButton.click();
+    await this.page.waitForTimeout(TIMEOUTS.MICRO_WAIT);
+    Logger.success('Fill', 'Lambda Editor', 'Code entered and block view restored');
+
+    Logger.action('Click', 'Lambda Editor', 'Saving lambda');
+    await editor.saveButton.click();
+
+    const commitFrame = this.container.getFrame(IFRAMES.COMMIT_MODAL);
+    const commit = new CommitModalComponent(commitFrame);
+    await commit.descriptionInput.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await commit.descriptionInput.fill(data.name);
+    await commit.saveButton.click();
+
+    await this.container.frame
+      .getByText('Your lambda has been saved,')
+      .waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    Logger.success('Create', 'Lambda', `Lambda created: ${data.name}`);
+
+    const closeBtn = this.container.frame.getByRole('button', { name: 'Close' });
+    await closeBtn.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await closeBtn.click();
+    Logger.success('Click', 'Lambda Editor', 'Editor closed after create');
+  }
+
+  /** Search for a lambda, open it in the editor, update its description, save, and commit */
+  async editLambdaProcess(name: string, editedDescription: string): Promise<void> {
+    const processesFrame = this.container.getFrame(IFRAMES.PROCESSES);
+    const processes = new ProcessesComponent(processesFrame);
+
+    await processes.searchBox.click();
+    await processes.searchBox.fill(name);
+    await this.page.waitForTimeout(TIMEOUTS.SHORT_WAIT);
+
+    const editTarget = processes.getProcessItem(name, true).first();
+    await editTarget.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT }).catch(async () => {
+      Logger.warn('Search', 'Processes', `${name} not visible, retrying search`);
+      await processes.searchBox.fill('');
+      await processes.searchBox.fill(name);
+    });
+    await editTarget.hover();
+
+    await processes.editButton.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await processes.editButton.click();
+    Logger.action('Click', 'Processes', `Editing lambda: ${name}`);
+
+    const innerFrame = this.container.getFrame(IFRAMES.EDITOR).frameLocator('iframe');
+    const editor = new LambdaEditorComponent(innerFrame);
+
+    await editor.editInfoIcon.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await editor.editInfoIcon.click({ force: true });
+
+    await editor.descriptionInput.dblclick();
+    await editor.descriptionInput.fill(editedDescription);
+
+    Logger.action('Click', 'Lambda Editor', 'Saving edited lambda');
+    await editor.saveButton.click();
+
+    const commitFrame = this.container.getFrame(IFRAMES.COMMIT_MODAL);
+    const commit = new CommitModalComponent(commitFrame);
+    await commit.descriptionInput.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await commit.descriptionInput.fill(editedDescription);
+    await commit.saveButton.click();
+
+    await this.container.frame
+      .getByText('Your lambda has been saved,')
+      .waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    Logger.success('Edit', 'Lambda', `Lambda edited: ${name} → ${editedDescription}`);
+
+    const closeBtn = this.container.frame.getByRole('button', { name: 'Close' });
+    await closeBtn.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await closeBtn.click();
+    Logger.success('Click', 'Lambda Editor', 'Editor closed after edit');
+  }
+
+  /** Reset filter, search by original name, locate item by edited description, and confirm deletion */
+  async deleteLambdaProcess(name: string, editedDescription: string): Promise<void> {
+    const processesFrame = this.container.getFrame(IFRAMES.PROCESSES);
+    const processes = new ProcessesComponent(processesFrame);
+
+    await processes.resetFilterIcon.click();
+    await processes.searchBox.click();
+    await processes.searchBox.fill(name);
+    await this.page.waitForTimeout(TIMEOUTS.SHORT_WAIT);
+
+    const deleteTarget = processes.getProcessItem(editedDescription).first();
+    await deleteTarget.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT }).catch(async () => {
+      Logger.warn('Search', 'Processes', `${editedDescription} not visible, retrying search`);
+      await processes.searchBox.fill('');
+      await processes.searchBox.fill(name);
+    });
+    await deleteTarget.hover();
+    await deleteTarget.click();
+
+    await processes.deleteButton.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await processes.deleteButton.click();
+    await this.page.waitForTimeout(TIMEOUTS.MICRO_WAIT);
+
+    // Confirm deletion in the confirmation dialog
+    await processes.deleteButton.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    await processes.deleteButton.click();
+    Logger.success('Delete', 'Lambda', `Lambda deleted: ${name}`);
+  }
+
+  /** Reset filter, search, and wait for "No results" to confirm the lambda was deleted */
+  async verifyLambdaProcessDeleted(name: string): Promise<void> {
+    const processesFrame = this.container.getFrame(IFRAMES.PROCESSES);
+    const processes = new ProcessesComponent(processesFrame);
+
+    await processes.resetFilterIcon.click();
+    await processes.searchBox.click();
+    await processes.searchBox.fill(name);
+    await this.page.waitForTimeout(TIMEOUTS.SHORT_WAIT);
+
+    await processes.noResultsText.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_WAIT });
+    Logger.success('Verify', 'Processes', `Lambda not found after deletion: ${name}`);
   }
 }

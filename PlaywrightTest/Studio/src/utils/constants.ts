@@ -44,6 +44,7 @@ export const TIMEOUTS = {
   MEDIUM_WAIT: 15_000,
   LONG_WAIT: 30_000,
   SHORT_WAIT: 5_000,
+  MICRO_WAIT: 1_000
 } as const;
 
 // ── Static test data ─────────────────────────────────────────────────
