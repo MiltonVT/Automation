@@ -11,6 +11,10 @@ export class DashboardComponent extends BaseComponent {
     super(frame);
   }
 
+  get createButton(): Locator {
+    return this.frame.getByRole('button', { name: 'Create' });
+  }
+
   get modulesButton(): Locator {
     return this.frame.getByRole('button', { name: 'Modules' });
   }

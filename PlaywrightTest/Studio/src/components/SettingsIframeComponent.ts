@@ -43,6 +43,10 @@ export class SettingsIframeComponent extends BaseComponent {
 
   // -- Basic Info fields ----------------------------------------------
 
+  get shortDescriptionInput(): Locator {
+    return this.frame.getByRole('textbox', { name: 'Short description' });
+  }
+
   get descriptionTextarea(): Locator {
     return this.frame.locator('textarea').first();
   }

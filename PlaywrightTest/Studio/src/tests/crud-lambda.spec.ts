@@ -1,7 +1,10 @@
 import { test } from '../fixtures/testFixture';
-import { DataFactory } from '../utils/dataFactory';
 
-const lambdaData = DataFactory.lambda('SMOKE_TEST_LAMBDA');
+const lambdaData = {
+  name: 'SMOKE_TEST_LAMBDA',
+  description: 'SMOKE_TEST_LAMBDA',
+  code: 'Context.setRegister("1000", "Test")\nFrontend.eventComponent("REFRESH", "txtSmoke")\n\n',
+};
 const editedDescription = `EDITED_${lambdaData.name}`;
 
 /**

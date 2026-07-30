@@ -26,6 +26,10 @@
 - Usa el formato: `[Acción] -> [Entidad] : [Detalle]`.
 - **Ejemplo:** `[Login] -> Formulario : Enviando credenciales de administrador.`
 
+### 6. Pausas después de Búsquedas
+- Después de realizar cualquier búsqueda (fill en un campo de búsqueda/search box), agrega siempre una pausa mínima de 1 segundo (`await this.page.waitForTimeout(TIMEOUTS.MICRO_WAIT)`) para dar tiempo a que los resultados se rendericen antes de continuar.
+- Esto aplica a todos los campos de búsqueda: filtros de pantallas, búsqueda de componentes en el editor, búsqueda de plantillas, etc.
+
 ---
 
 ## Ejemplo de Prompt para el Agente

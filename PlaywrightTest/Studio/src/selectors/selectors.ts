@@ -30,6 +30,7 @@ export const IFRAMES = {
   CREATE_LAMBDA: 'iframe[title="Create lambda"]',
   COMMIT_MODAL: 'iframe[title="Commit modal"]',
   LAMBDA_MAKECODE: 'iframe[title="lambda makecode"]',
+  CREATE_APP: 'iframe[title="[Create App]"]',
 } as const;
 
 // ── Login Page ──────────────────────────────────────────────────────
@@ -47,6 +48,9 @@ export const STUDIO = {
 // ── Data-testid based (preferred) ───────────────────────────────────
 export const TEST_IDS = {
   SETTING_NAME: 'setting_name',
+  SETTING_DESCRIPTION: 'setting_description',
+  SETTING_TRANSACTION_CODE: 'setting_transaction_code',
+  MODAL_UNDEFINED: 'modal-undefined',
   // Create Branch
   BRANCH_TYPE_DROPDOWN: 'dropdownType',
   BRANCH_NAME_INPUT: 'textInputBranchName',

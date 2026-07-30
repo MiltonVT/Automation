@@ -17,4 +17,8 @@ export class CommitModalComponent extends BaseComponent {
   get saveButton(): Locator {
     return this.frame.getByRole('button', { name: 'Save' });
   }
+
+  get saveAndContinueButton(): Locator {
+    return this.frame.getByRole('button', { name: 'Save and continue' });
+  }
 }

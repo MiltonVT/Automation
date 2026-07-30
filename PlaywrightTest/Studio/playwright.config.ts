@@ -32,7 +32,7 @@ export default defineConfig({
     headless: !!process.env.CI,
     baseURL: process.env.STUDIO_URL || 'https://studio.alfa.envs.veritran.com/',
     trace: 'on-first-retry',
-    screenshot: 'on',
+    screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
 

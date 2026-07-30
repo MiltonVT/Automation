@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, test } from '@playwright/test';
 
 /**
  * Base Page — thin wrapper around Playwright Page.
@@ -17,11 +17,13 @@ export class BasePage {
     await this.page.goto(url);
   }
 
-  async getCurrentUrl(): string {
+  async getCurrentUrl(): Promise<string> {
     return this.page.url();
   }
 
-  async takeScreenshot(filename: string): Promise<void> {
-    await this.page.screenshot({ path: filename });
+  async takeScreenshot(filename: string, targetPage?: Page): Promise<void> {
+    const pageToCapture = targetPage ?? this.page;
+    const buffer = await pageToCapture.screenshot();
+    await test.info().attach(filename, { body: buffer, contentType: 'image/png' });
   }
 }

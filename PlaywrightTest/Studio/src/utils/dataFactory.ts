@@ -1,5 +1,8 @@
 import { LocalVariableData } from '../components/LocalVariablesComponent';
 import { LambdaData } from '../components/LambdaEditorComponent';
+import { ScreenData } from '../components/ScreenEditorComponent';
+import { TransactionData } from '../components/TransactionEditorComponent';
+import { AppData } from '../components/CreateAppComponent';
 
 export interface ThemeData {
   name: string;
@@ -42,6 +45,39 @@ export class DataFactory {
       name,
       description: name,
       code: 'Context.setRegister("1000", "Test")\n\n',
+    };
+  }
+
+  /** Generate a unique screen data set */
+  static screen(prefix: string = 'SmokeTestScreen'): ScreenData {
+    const timestamp = Date.now();
+    const name = `${prefix}${timestamp}`;
+    return {
+      sequence: 'S999',
+      name,
+      description: name,
+      templateSearch: 'Smoke',
+    };
+  }
+
+  /** Generate a unique mobile app data set */
+  static app(prefix: string = 'SmokeTestAppMobile'): AppData {
+    const timestamp = Date.now();
+    const name = `${prefix}${timestamp}`;
+    return {
+      name,
+      shortDescription: name,
+    };
+  }
+
+  /** Generate a unique transaction data set */
+  static transaction(prefix: string = 'SmokeTestTRX'): TransactionData {
+    const timestamp = Date.now();
+    const name = `${prefix}${timestamp}`;
+    return {
+      name,
+      description: name,
+      transactionCode: '9999',
     };
   }
 }
